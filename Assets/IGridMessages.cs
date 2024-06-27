@@ -4,5 +4,5 @@ using UnityEngine.UIElements;
 
 public interface IGridMessages: IEventSystemHandler
 {
-    void DropToken(Vector2 pos);
+    void ClickGrid(Vector2 pos);
 }

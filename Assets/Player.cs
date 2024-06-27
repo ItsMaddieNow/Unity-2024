@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -47,8 +45,14 @@ public class Player : MonoBehaviour
         #endif
         LayerMask mask = LayerMask.GetMask("Game Grid");
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask:mask)){
-            hit.transform.BroadcastMessage("DropToken", hit.textureCoord);
+        bool backfacePhysics = Physics.queriesHitBackfaces;
+        Physics.queriesHitBackfaces = true;
+        bool raycastResult = Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask:mask);
+        Physics.queriesHitBackfaces = backfacePhysics;
+        if (raycastResult){
+            Vector3 localHitPoints = hit.transform.worldToLocalMatrix* hit.point;
+            print("Intersected Plane");
+            hit.transform.parent.BroadcastMessage("ClickGrid", hit.textureCoord);
         }
     }
     
