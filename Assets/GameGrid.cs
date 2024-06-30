@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 
 public class GameGrid : MonoBehaviour, IGridMessages
@@ -24,10 +23,13 @@ public class GameGrid : MonoBehaviour, IGridMessages
     }
     void PlaceToken(int x, int y){
         Vector2 gridPosition = new Vector2(x, y)-((Vector2)dimensions/2)+Vector2.one*0.5f;
-        GameToken token = Instantiate(GetPlayerToken(currentPlayer), transform.localToWorldMatrix* new Vector4(gridPosition.x, gridPosition.y, 0, 1), quaternion.identity, transform).GetComponent<GameToken>();
+        float dropLevel = ((float)dimensions.y)/2 + 2.5f;
+        print("dropped: " + dropLevel + " target: " + gridPosition.y);
+        GameToken token = Instantiate(GetPlayerToken(currentPlayer), transform.localToWorldMatrix* new Vector4(gridPosition.x, dropLevel, 0, 1), quaternion.identity, transform).GetComponent<GameToken>();
+        //I don't know why but there seems to be a 1 unit difference from local to world matrix and from setting the local transform directly
+        token.Drop(gridPosition.y);
         if (checkVictory(new Vector2Int(x, y))) print("Victory");
         currentPlayer = PlayerFunctions.NextPlayer(currentPlayer);
-        token.drop();
         tokens[x, y] = token;
     }
     void DropToken(int column){
@@ -89,7 +91,7 @@ public class GameGrid : MonoBehaviour, IGridMessages
     }
 
     bool slotMatchesPlayer(int x, int y, GamePlayer player){
-        return tokens[x, y]!=null && tokens[x, y].getColour()==player;
+        return tokens[x, y]!=null && tokens[x, y].GetColour()==player;
     }
     
     void Victory(){

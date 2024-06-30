@@ -49,9 +49,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2204532243094871529, guid: 89bc8e7495144e9bcb02b95af5a25380, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2204532243094871529, guid: 89bc8e7495144e9bcb02b95af5a25380, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 46d367d757887b0bb93b69814c89be53, type: 2}
+      objectReference: {fileID: 2100000, guid: 9e35074f1e71c521a8e3464330afca56, type: 2}
     - target: {fileID: 2212729767685678327, guid: 89bc8e7495144e9bcb02b95af5a25380, type: 3}
       propertyPath: m_Name
       value: Red Token
