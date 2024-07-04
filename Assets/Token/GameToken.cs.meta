@@ -1,2 +1,14 @@
 fileFormatVersion: 2
 guid: a4fcb6216c7b9c467887776c9b91f8da
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - blinkingMaterial: {fileID: 2100000, guid: 9e35074f1e71c521a8e3464330afca56, type: 2}
+  - Player1BaseMaterial: {fileID: 2100000, guid: 46d367d757887b0bb93b69814c89be53, type: 2}
+  - Player2BaseMaterial: {fileID: 2100000, guid: c8cb7b9aba3dd9607938d4f56f5b9963, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

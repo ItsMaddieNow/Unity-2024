@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class CursorCaster : MonoBehaviour
 {
     public Camera cam;
     private InputAction pointer;
     private InputAction drop;
     Vector2 pointerPos;
-    #if DEBUG
+    #if UNITY_EDITOR
     public bool visualizeRays = false;
     public List<Vector3> rays;
     #endif
@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     }
 
     void OnDrawGizmos(){
-        #if DEBUG
+        #if UNITY_EDITOR
         if (visualizeRays){
             Gizmos.DrawLineList(rays.ToArray());
         }
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     void RayFromCamera(InputAction.CallbackContext context){
         pointerPos = pointer.ReadValue<Vector2>();
         Ray ray = cam.ScreenPointToRay(pointerPos);
-        #if DEBUG
+        #if UNITY_EDITOR
         rays.Add(ray.origin);
         rays.Add(ray.origin+ray.direction);
         #endif
@@ -50,8 +50,6 @@ public class Player : MonoBehaviour
         bool raycastResult = Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask:mask);
         Physics.queriesHitBackfaces = backfacePhysics;
         if (raycastResult){
-            Vector3 localHitPoints = hit.transform.worldToLocalMatrix* hit.point;
-            print("Intersected Plane");
             hit.transform.parent.BroadcastMessage("ClickGrid", hit.textureCoord);
         }
     }

@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 195185729560648756}
   - component: {fileID: 5244424615866655301}
   - component: {fileID: 2204532243094871529}
-  - component: {fileID: 6830051445312571086}
+  - component: {fileID: 3403061744729967485}
   m_Layer: 0
   m_Name: Token
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &195185729560648756
 Transform:
@@ -87,7 +87,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6830051445312571086
+--- !u!114 &3403061744729967485
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,7 +100,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   colour: 0
-  renderer: {fileID: 2204532243094871529}
-  baseMaterial: {fileID: 2100000, guid: 46d367d757887b0bb93b69814c89be53, type: 2}
-  droppingMaterial: {fileID: 2100000, guid: 9e35074f1e71c521a8e3464330afca56, type: 2}
-  connectedMaterial: {fileID: 2100000, guid: 0105decd5bb4f93b1a59b89b1b59dc04, type: 2}
+  blinkingMaterial: {fileID: 2100000, guid: 9e35074f1e71c521a8e3464330afca56, type: 2}
+  Player1BaseColor: {r: 1, g: 0, b: 0, a: 1}
+  Player1DropColor: {r: 1, g: 0, b: 0, a: 0.3882353}
+  Player1HintColor: {r: 1, g: 1, b: 1, a: 1}
+  Player1BaseMaterial: {fileID: 2100000, guid: 46d367d757887b0bb93b69814c89be53, type: 2}
+  Player2BaseColor: {r: 1, g: 1, b: 0, a: 1}
+  Player2DropColor: {r: 1, g: 1, b: 0, a: 0.3882353}
+  Player2HintColor: {r: 1, g: 1, b: 1, a: 1}
+  Player2BaseMaterial: {fileID: 2100000, guid: c8cb7b9aba3dd9607938d4f56f5b9963, type: 2}
