@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TNRD;
 using UnityEngine;
@@ -13,7 +12,7 @@ enum GridState{
 }
 public class BaseGrid : MonoBehaviour
 {
-    GridState state = GridState.turnOne; 
+    IGridState state = new TurnState(); 
     public GamePlayer currentPlayer = GamePlayer.one;
     public GamePlayer[,] tokens = new GamePlayer[7, 6];
     public SerializableInterface<IGridDisplay>[] gridDisplays = new SerializableInterface<IGridDisplay>[0];
@@ -25,6 +24,10 @@ public class BaseGrid : MonoBehaviour
         get => new Vector2Int(tokens.GetLength(0),tokens.GetLength(1));
     }
     
+
+    void Update(){
+        state.Update(this);
+    }
     int LowestFreeSlot(int column){
         for(int i = 0; i < tokens.GetLength(1); i++){
             if (tokens[column, i] == GamePlayer.none){
@@ -36,74 +39,26 @@ public class BaseGrid : MonoBehaviour
 
     bool PlayersTurn(GamePlayer player)
     {
-        return player == currentPlayer;
+        return state.IsPlayersTurn(this, player);
     }
 
     public void Drop(GamePlayer player, int column){
-        if (player != currentPlayer){
-            throw new NotYourTurnException();
-        }
-        int row = LowestFreeSlot(column);
-        if(row==tokens.GetLength(1)){
-            throw new IndexOutOfRangeException("Tried To Insert Token At The Top of a Full Column");
-        }
-        var allDroped = new CompletionCount(gridDisplays.Count(), this, column, row);
-        foreach (var serializedDisplay in gridDisplays)
-        {
-            IGridDisplay display = serializedDisplay.Value;
-            display.DropToken(currentPlayer, column, row, allDroped);
-        }
-        tokens[column, row] = currentPlayer;
+        state.Drop(this, player, column);
     }
     public void PassTurn(){
         currentPlayer = PlayerFunctions.NextPlayer(currentPlayer);
-        switch (currentPlayer){
-            case GamePlayer.one:
-                state = GridState.turnOne;
-                break;
-            case GamePlayer.two:
-                state = GridState.turnTwo;
-                break;
-            default:
-                throw new ArgumentException(String.Format("{0} is not a valid Player", (int)currentPlayer));
-        } 
-    }
-    IEnumerator AfterDrops(CompletionCount drops){
-        yield return drops.IsCompleted();
-    }
-    void TokenDropped(int column, int row){
-        if (CheckVictory(new Vector2Int(column, row))){
-            foreach (var serializedListener in victoryListeners)
-            {
-                IGridVictory victoryListener = serializedListener.Value;
-                victoryListener.Victory(currentPlayer);
-            }
-        }else{
-            PassTurn();
-        }
-        
     }
 
-    public class CompletionCount{
-        int totalDisplays;
-        int finishedDisplays=0;
-        BaseGrid grid;
-        int column;
-        int row;
-        public CompletionCount(int totalDisplays, BaseGrid grid, int column, int row){
-            this.totalDisplays = totalDisplays;
-            this.grid = grid;
-            this.column = column;
-            this.row = row;
+    public class StateCompletion{
+        int remainingDisplays;
+        public StateCompletion(int totalDisplays){
+            this.remainingDisplays = totalDisplays;
         }
-        public bool IsCompleted(){
-            return finishedDisplays >= totalDisplays;
+        public bool IsDone(){
+            return remainingDisplays <= 0;
         }
         public void markCompleted(){
-            finishedDisplays++;
-            if (IsCompleted()){
-                grid.TokenDropped(column, row);
-            }
+            remainingDisplays--;
         }
     }
     
@@ -151,6 +106,105 @@ public class BaseGrid : MonoBehaviour
             display.Init(tokens.GetLength(0), tokens.GetLength(1));
         }
     }
+    void ChangeState(IGridState newState){
+        state.Exit(this);
+        state = newState;
+        state.Enter(this);
+    }
+    public interface IGridState{
+        public void Update(BaseGrid grid);
+        public void Exit(BaseGrid grid);
+        public void Enter(BaseGrid grid){}
+        public void Drop(BaseGrid grid, GamePlayer playerDropping, int column){
+            throw new NotYourTurnException();
+        }
+        public bool IsPlayersTurn(BaseGrid grid, GamePlayer player){
+            return false;
+        }
+    }
+    public class TurnState:IGridState{
+        public void Update(BaseGrid grid){
+            
+        }
+        public void Exit(BaseGrid grid){
+
+        }
+        public void Ee(BaseGrid grid){
+
+        }
+        public void Drop(BaseGrid grid, GamePlayer playerDropping, int column){
+            if (!grid.PlayersTurn(playerDropping)){
+                throw new NotYourTurnException();
+            } else {
+                grid.ChangeState(new DroppingState(grid, playerDropping, column));
+            }
+        }
+        public bool IsPlayersTurn(BaseGrid grid, GamePlayer player){
+            return grid.currentPlayer == player;
+        }
+    }
+
+    public class DroppingState : IGridState
+    {
+        int column, row;
+        StateCompletion stateCompletion;
+        public DroppingState(BaseGrid grid, GamePlayer playerDropping, int column){
+            this.column = column;
+            row = grid.LowestFreeSlot(column);
+            if(row==grid.tokens.GetLength(1)){
+                throw new IndexOutOfRangeException("Tried To Insert Token At The Top of a Full Column");
+            }
+            stateCompletion = new StateCompletion(grid.gridDisplays.Count());
+            foreach (var serializedDisplay in grid.gridDisplays)
+            {
+                IGridDisplay display = serializedDisplay.Value;
+                display.DropToken(playerDropping, column, row, stateCompletion);
+            }
+            grid.tokens[column, row] = playerDropping;
+        }
+        public void Exit(BaseGrid grid)
+        {
+            if (grid.CheckVictory(new Vector2Int(column, row))){
+                foreach (var serializedListener in grid.victoryListeners)
+                {
+                    IGridVictory victoryListener = serializedListener.Value;
+                    victoryListener.Victory(grid.currentPlayer);
+                }
+            }else{
+                grid.PassTurn();
+            }
+        }
+
+        public void Update(BaseGrid grid)
+        {
+            if (stateCompletion.IsDone()){
+                grid.ChangeState(new SwapState());
+            }
+        }
+    }
+    public class SwapState : IGridState
+    {
+        StateCompletion stateCompletion;
+        public void Exit(BaseGrid grid)
+        {
+
+        }
+        public void Enter(BaseGrid grid){
+            stateCompletion = new StateCompletion(grid.turnListeners.Count());
+            foreach (var serializedListener in grid.turnListeners)
+            {
+                IGridTurns turnListener = serializedListener.Value;
+                turnListener.PlayerTransition(grid.currentPlayer, stateCompletion);
+            }
+            
+        }
+        public void Update(BaseGrid grid)
+        {
+            if (stateCompletion.IsDone()){
+                grid.ChangeState(new TurnState());
+            }
+        }
+    }
 }
 
 public class NotYourTurnException: Exception{
@@ -168,3 +222,4 @@ public class NotYourTurnException: Exception{
     {
     }
 }
+

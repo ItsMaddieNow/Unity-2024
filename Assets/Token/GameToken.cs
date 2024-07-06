@@ -6,6 +6,7 @@ using Unity.Mathematics;
 [RequireComponent(typeof(Renderer))]
 public class GameToken : MonoBehaviour
 {
+    ITokenState state = new RestingState();
     public GamePlayer colour;
     [SerializeField]
     private Material blinkingMaterial;
@@ -26,30 +27,21 @@ public class GameToken : MonoBehaviour
     private Material Player2BaseMaterial;
     private Renderer renderer;
     
-    public void Drop(float targetHeight, BaseGrid.CompletionCount dropCompletion)
+    public void Drop(float targetHeight, BaseGrid.StateCompletion dropCompletion)
     {
         renderer.material = blinkingMaterial;
         renderer.material.SetColor("_Primary_Color", GetBaseColor(colour));
         renderer.material.SetColor("_Secondary_Color", GetDropColor(colour));
-        StartCoroutine(DropCoroutine(targetHeight, dropCompletion));
+        ChangeState(new DroppingState(this, targetHeight, dropCompletion));
+        
     }
-    IEnumerator DropCoroutine(float targetHeight, BaseGrid.CompletionCount dropCompletion)
+    // Update is called once per frame
+    void Update()
     {
-        float startHeight = transform.localPosition.y;
-        float velocity = 0;
-        while (true)
-        {
-            velocity += Time.deltaTime * -9.81f;
-            float nextPos = Time.deltaTime * velocity + transform.localPosition.y;
-            if (nextPos <= targetHeight) break;
-            renderer.material.SetFloat("_Opacity", math.unlerp(startHeight, targetHeight, nextPos));
-            transform.localPosition = new Vector3(transform.localPosition.x, nextPos, transform.localPosition.z);
-            yield return null;
-        }
-        dropCompletion.markCompleted();
-        transform.localPosition = new Vector3(transform.localPosition.x, targetHeight, transform.localPosition.z);
-        renderer.material = GetBaseMaterial(colour);
+        state.Update(this);
     }
+
+    
     public GamePlayer GetColour()
     {
         return colour;
@@ -102,10 +94,55 @@ public class GameToken : MonoBehaviour
         renderer = GetComponent<Renderer>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void ChangeState(ITokenState newState){
+        state.Exit(this);
+        state = newState;
     }
 
+    interface ITokenState{
+        public void Update(GameToken token);
+        public void Exit(GameToken token);
+    }
+
+    class DroppingState: ITokenState{
+        float targetHeight;
+        float startHeight;
+        float velocity = 0;
+        BaseGrid.StateCompletion dropCompletion;
+        public DroppingState(GameToken token, float targetHeight, BaseGrid.StateCompletion dropCompletion){
+            startHeight = token.transform.localPosition.y;
+            this.targetHeight = targetHeight;
+            this.dropCompletion = dropCompletion;
+        }
+
+        public void Exit(GameToken token)
+        {
+            token.transform.localPosition = new Vector3(token.transform.localPosition.x, targetHeight, token.transform.localPosition.z);
+            token.renderer.material = token.GetBaseMaterial(token.colour);
+            dropCompletion.markCompleted();
+        }
+
+        public void Update(GameToken token) {
+            velocity += Time.deltaTime * -9.81f;
+            float nextPos = Time.deltaTime * velocity + token.transform.localPosition.y;
+            if (nextPos > targetHeight){
+                token.renderer.material.SetFloat("_Opacity", math.unlerp(startHeight, targetHeight, nextPos));
+                token.transform.localPosition = new Vector3(token.transform.localPosition.x, nextPos, token.transform.localPosition.z);
+            }else {
+                token.ChangeState(new RestingState());
+            }
+            
+        }
+    }
+    class RestingState: ITokenState{
+        
+        public void Update(GameToken token) {
+            
+        }
+        public void Exit(GameToken token)
+        {
+            
+        }
+    }
 }
+

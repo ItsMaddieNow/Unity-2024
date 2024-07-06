@@ -10,7 +10,7 @@ public class GridDisplay : MonoBehaviour, IGridDisplay
     public void Init(int width, int height){
         dimensions = new Vector2Int(width, height);
     }
-    public void DropToken(GamePlayer player, int column, int row, BaseGrid.CompletionCount dropCompletion)
+    public void DropToken(GamePlayer player, int column, int row, BaseGrid.StateCompletion dropCompletion)
     {
         Vector2 gridPosition = new Vector2(column, row)-((Vector2)dimensions/2)+Vector2.one*0.5f;
         float dropLevel = ((float)dimensions.y)/2 + 2.5f;

@@ -154,11 +154,7 @@ MonoBehaviour:
     rawReference:
       rid: -2
   victoryListeners: []
-  turnListeners:
-  - mode: 0
-    unityReference: {fileID: 729345149}
-    rawReference:
-      rid: -2
+  turnListeners: []
   references:
     version: 2
     RefIds:
