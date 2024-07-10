@@ -5,6 +5,6 @@ class SimpleVictoryLogger : MonoBehaviour, IGridVictory
 {
     public void Victory(GamePlayer player)
     {
-        Debug.Log(String.Format("Player {} Wins!", player.ToString()));
+        Debug.Log(String.Format("Player {0} Wins!", player.ToString()));
     }
 }
