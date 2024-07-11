@@ -14,7 +14,6 @@ public class GridDisplay : MonoBehaviour, IGridDisplay
     {
         Vector2 gridPosition = new Vector2(column, row)-((Vector2)dimensions/2)+Vector2.one*0.5f;
         float dropLevel = ((float)dimensions.y)/2 + 2.5f;
-        print("dropped: " + dropLevel + " target: " + gridPosition.y);
         GameToken token = Instantiate(tokenPrefab, transform.localToWorldMatrix* new Vector4(gridPosition.x, dropLevel, 0, 1), Quaternion.identity, transform).GetComponent<GameToken>();
         token.colour = player;
         token.Drop(gridPosition.y, dropCompletion);

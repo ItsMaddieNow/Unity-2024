@@ -36,22 +36,6 @@ public class GridDollyOperator : MonoBehaviour, IGridTurns
         }
     }
     
-    /*IEnumerator SwingToOne(){
-        for(float i = 0f; i < 1f; i+=Time.deltaTime/transitionDuration){
-            cameraDolly.CameraPosition = cameraTransition.Evaluate(1f-i);
-            yield return null;
-        }
-        cameraDolly.CameraPosition = 0f;
-    }
-
-    IEnumerator SwingToTwo(){
-        for(float i = 0f; i < 1f; i+=Time.deltaTime/transitionDuration){
-            cameraDolly.CameraPosition = cameraTransition.Evaluate(i);
-            yield return null;
-        }
-        cameraDolly.CameraPosition = 1f;
-    }*/
-    
     void ChangeState(IOperatorState newState){
         state.Exit(this);
         state = newState;

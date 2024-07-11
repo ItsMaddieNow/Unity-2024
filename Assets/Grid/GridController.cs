@@ -18,7 +18,6 @@ public class GridController : MonoBehaviour, IGridMessages
     {
         Vector2 scaled = (pos * grid.dimensions);
         Vector2Int indexes = Vector2Int.Min(new Vector2Int(Mathf.FloorToInt(scaled.x), Mathf.FloorToInt(scaled.y)), grid.dimensions-Vector2Int.one);
-        print("DroppedToken "+indexes);
         grid.Drop(grid.currentPlayer, indexes.x);
     }
 
