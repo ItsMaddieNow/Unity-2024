@@ -1,9 +1,12 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:VisualElement name="VisualElement" style="flex-grow: 1; flex-direction: column; justify-content: center;">
-        <engine:Label text="Player {} Wins" name="Label" style="-unity-text-align: upper-center; font-size: 32px;" />
-        <engine:VisualElement style="flex-grow: 0; flex-direction: row; align-items: flex-start; justify-content: center; align-self: auto; align-content: flex-start;">
-            <engine:Button text="Play Again" />
-            <engine:Button text="Quit" />
+    <Style src="project://database/Assets/Shared%20UI%20Style.uss?fileID=7433441132597879392&amp;guid=90125e73b271efe03927df290379591b&amp;type=3#Shared UI Style" />
+    <engine:VisualElement name="Base" class="background background-inactive" style="flex-grow: 1; flex-direction: column; justify-content: center;">
+        <engine:VisualElement name="Content" style="flex-grow: 1; justify-content: center;">
+            <engine:Label text="Player {} Wins" name="EndText" style="-unity-text-align: upper-center; font-size: 32px;" />
+            <engine:VisualElement style="flex-grow: 0; flex-direction: row; align-items: flex-start; justify-content: center; align-self: auto; align-content: flex-start;">
+                <engine:Button text="Play Again" name="Retry" />
+                <engine:Button text="Quit" name="Quit" />
+            </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

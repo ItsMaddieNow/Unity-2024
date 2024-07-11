@@ -13,10 +13,11 @@ enum GridState{
 public class BaseGrid : MonoBehaviour
 {
     IGridState state = new TurnState(); 
+    private int completedColumns = 0;
     public GamePlayer currentPlayer = GamePlayer.one;
     public GamePlayer[,] tokens = new GamePlayer[7, 6];
     public SerializableInterface<IGridDisplay>[] gridDisplays = new SerializableInterface<IGridDisplay>[0];
-    public SerializableInterface<IGridVictory>[] victoryListeners = new SerializableInterface<IGridVictory>[0];
+    public SerializableInterface<IGridEnd>[] endListeners = new SerializableInterface<IGridEnd>[0];
     public SerializableInterface<IGridTurns>[] turnListeners = new SerializableInterface<IGridTurns>[0];
 
 
@@ -111,6 +112,17 @@ public class BaseGrid : MonoBehaviour
         state = newState;
         state.Enter(this);
     }
+    public void Reset(){
+        tokens = new GamePlayer[7, 6];
+        completedColumns = 0;
+        currentPlayer = GamePlayer.one;
+        ChangeState(new TurnState());
+        foreach (var serializedDisplay in gridDisplays)
+        {
+            IGridDisplay display = serializedDisplay.Value;
+            display.Clear();
+        }
+    }
     public interface IGridState{
         public void Update(BaseGrid grid);
         public void Exit(BaseGrid grid);
@@ -154,6 +166,9 @@ public class BaseGrid : MonoBehaviour
             if(row==grid.tokens.GetLength(1)){
                 throw new IndexOutOfRangeException("Tried To Insert Token At The Top of a Full Column");
             }
+            if(row-1==grid.tokens.GetLength(1)){
+                grid.completedColumns++;
+            }
             stateCompletion = new StateCompletion(grid.gridDisplays.Count());
             foreach (var serializedDisplay in grid.gridDisplays)
             {
@@ -164,21 +179,22 @@ public class BaseGrid : MonoBehaviour
         }
         public void Exit(BaseGrid grid)
         {
-            if (grid.CheckVictory(new Vector2Int(column, row))){
-                foreach (var serializedListener in grid.victoryListeners)
-                {
-                    IGridVictory victoryListener = serializedListener.Value;
-                    victoryListener.Victory(grid.currentPlayer);
-                }
-            }else{
-                grid.PassTurn();
-            }
+            
         }
 
         public void Update(BaseGrid grid)
-        {
+        {   
             if (stateCompletion.IsDone()){
-                grid.ChangeState(new SwapState());
+                if (grid.CheckVictory(new Vector2Int(column, row))){
+                    grid.ChangeState(new VictoryState());
+                }
+                else if(grid.completedColumns>=grid.tokens.GetLength(0)){
+                    grid.ChangeState(new EndState());
+                }
+                else {
+                    //grid.PassTurn();
+                    grid.ChangeState(new SwapState());
+                }
             }
         }
     }
@@ -190,6 +206,7 @@ public class BaseGrid : MonoBehaviour
 
         }
         public void Enter(BaseGrid grid){
+            grid.PassTurn();
             stateCompletion = new StateCompletion(grid.turnListeners.Count());
             foreach (var serializedListener in grid.turnListeners)
             {
@@ -202,6 +219,42 @@ public class BaseGrid : MonoBehaviour
         {
             if (stateCompletion.IsDone()){
                 grid.ChangeState(new TurnState());
+            }
+        }
+    }
+    public class VictoryState : IGridState
+    {
+        public void Exit(BaseGrid grid)
+        {
+            
+        }
+
+        public void Update(BaseGrid grid)
+        {
+            
+        }
+        public void Enter(BaseGrid grid){
+            foreach (var serializedListener in grid.endListeners)
+            {
+                IGridEnd endListener = serializedListener.Value;
+                endListener.Victory(grid.currentPlayer);
+            }
+        }
+    }
+    public class EndState: IGridState
+    {
+        public void Exit(BaseGrid grid){
+            
+        }
+
+        public void Update(BaseGrid grid){
+            
+        }
+        public void Enter(BaseGrid grid){
+            foreach (var serializedListener in grid.endListeners)
+            {
+                IGridEnd endListener = serializedListener.Value;
+                endListener.End();
             }
         }
     }

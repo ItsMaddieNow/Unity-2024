@@ -12,6 +12,8 @@ public interface IGridTurns{
     public void PlayerTransition(GamePlayer player, BaseGrid.StateCompletion completion);
 }
 
-public interface IGridVictory{
-    public void Victory(GamePlayer player);
+public interface IGridEnd{
+    public void Victory(GamePlayer player){}
+    public void End(){}
+    public void Reset(){}
 }

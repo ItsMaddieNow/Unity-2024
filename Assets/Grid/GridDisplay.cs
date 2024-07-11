@@ -24,8 +24,9 @@ public class GridDisplay : MonoBehaviour, IGridDisplay
 
     public void Clear()
     {
-        foreach(GameToken token in transform.GetComponentsInChildren<GameToken>()){
-            Destroy(token.gameObject);
+        GameToken[] children = transform.GetComponentsInChildren<GameToken>();
+        for(int i = 0; i<children.Length; i++){
+            Destroy(children[i].gameObject);
         }
     }
 

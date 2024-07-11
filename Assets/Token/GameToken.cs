@@ -25,7 +25,7 @@ public class GameToken : MonoBehaviour
 
     [SerializeField]
     private Material Player2BaseMaterial;
-    private Renderer renderer;
+    private new Renderer renderer;
     
     public void Drop(float targetHeight, BaseGrid.StateCompletion dropCompletion)
     {

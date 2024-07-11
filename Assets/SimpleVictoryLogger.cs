@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-class SimpleVictoryLogger : MonoBehaviour, IGridVictory
+class SimpleVictoryLogger : MonoBehaviour, IGridEnd
 {
     public void Victory(GamePlayer player)
     {

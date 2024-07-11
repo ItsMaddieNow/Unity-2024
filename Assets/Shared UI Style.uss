@@ -1,0 +1,29 @@
+.background .unity-label {
+    color: rgb(255, 255, 255);
+}
+
+.background {
+    transition-duration: 1s;
+    transition-property: opacity;
+    background-color: rgba(0, 0, 0, 0.77);
+}
+
+.background > * {
+    transition-duration: 1s;
+    transition-property: scale;
+}
+
+.background-inactive {
+    opacity: 0;
+}
+
+.background-inactive > * {
+    scale: 0 0;
+}
+
+.background-active {
+    opacity: 1;
+}
+
+.background-active > * {
+}
