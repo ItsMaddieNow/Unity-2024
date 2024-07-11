@@ -37,7 +37,6 @@ public class VictoryScreen : MonoBehaviour, IGridEnd
 
     void OnAnimationFinish(TransitionEndEvent evt){
         if(evt.stylePropertyNames.Contains(new StylePropertyName("scale"))){
-            print("Animation Identified");
             CloseUi();
             grid.Reset();
         }

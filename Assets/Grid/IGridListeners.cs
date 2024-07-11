@@ -10,6 +10,7 @@ public interface IGridDisplay
 
 public interface IGridTurns{
     public void PlayerTransition(GamePlayer player, BaseGrid.StateCompletion completion);
+    public void InstantTransition(GamePlayer player);
 }
 
 public interface IGridEnd{

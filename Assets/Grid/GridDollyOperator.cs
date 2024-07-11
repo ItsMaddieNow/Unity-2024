@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridDollyOperator : MonoBehaviour, IGridTurns
@@ -32,7 +30,19 @@ public class GridDollyOperator : MonoBehaviour, IGridTurns
                 this.ChangeState(new SwingToTwoState(completion));
                 break;
             default:
-                throw new ArgumentException(String.Format("{0} is not a valid Player Token", (int)player));
+                throw new ArgumentException(string.Format("{0} is not a valid Player", (int)player));
+        }
+    }
+    public void InstantTransition(GamePlayer player){
+        switch (player){
+            case GamePlayer.one:
+                cameraDolly.CameraPosition = 0f;
+                break;
+            case GamePlayer.two:
+                cameraDolly.CameraPosition = 1f;
+                break;
+            default:
+                throw new ArgumentException(string.Format("{0} is not a valid Player", (int)player));
         }
     }
     

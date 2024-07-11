@@ -122,6 +122,11 @@ public class BaseGrid : MonoBehaviour
             IGridDisplay display = serializedDisplay.Value;
             display.Clear();
         }
+        foreach (var serializedListener in turnListeners)
+        {
+            IGridTurns turnListener = serializedListener.Value;
+            turnListener.InstantTransition(currentPlayer);
+        }
     }
     public interface IGridState{
         public void Update(BaseGrid grid);
