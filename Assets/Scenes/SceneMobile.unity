@@ -149,26 +149,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentPlayer: 1
-  gridDisplays:
-  - mode: 0
-    unityReference: {fileID: 729345149}
-    rawReference:
-      rid: -2
-  endListeners:
-  - mode: 0
-    unityReference: {fileID: 1036856321}
-    rawReference:
-      rid: -2
-  turnListeners:
-  - mode: 0
-    unityReference: {fileID: 154943371}
-    rawReference:
-      rid: -2
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
 --- !u!4 &39962602
 Transform:
   m_ObjectHideFlags: 0
@@ -841,7 +821,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84cc3b2f6c1a8579face535a77cc2ce2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grid: {fileID: 39962601}
+  grid: {fileID: 0}
 --- !u!1 &1190495193
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 using TNRD;
 using UnityEngine;
 
@@ -15,10 +16,14 @@ public class BaseGrid : MonoBehaviour
     IGridState state = new TurnState(); 
     private int completedColumns = 0;
     public GamePlayer currentPlayer = GamePlayer.one;
+    [HideInInspector]
     public GamePlayer[,] tokens = new GamePlayer[7, 6];
-    public SerializableInterface<IGridDisplay>[] gridDisplays = new SerializableInterface<IGridDisplay>[0];
-    public SerializableInterface<IGridEnd>[] endListeners = new SerializableInterface<IGridEnd>[0];
-    public SerializableInterface<IGridTurns>[] turnListeners = new SerializableInterface<IGridTurns>[0];
+    [ShowInInspector]
+    public List<IGridDisplay> gridDisplays = new List<IGridDisplay>();
+    [ShowInInspector]
+    public List<IGridEnd> endListeners = new List<IGridEnd>();
+    [ShowInInspector]
+    public List<IGridTurns> turnListeners = new List<IGridTurns>();
 
 
     public Vector2Int dimensions{
@@ -102,8 +107,7 @@ public class BaseGrid : MonoBehaviour
     }
     
     void Start(){
-        foreach (var serializedDisplays in gridDisplays){
-            IGridDisplay display = serializedDisplays.Value;
+        foreach (IGridDisplay display in gridDisplays){
             display.Init(tokens.GetLength(0), tokens.GetLength(1));
         }
     }
@@ -117,14 +121,12 @@ public class BaseGrid : MonoBehaviour
         completedColumns = 0;
         currentPlayer = GamePlayer.one;
         ChangeState(new TurnState());
-        foreach (var serializedDisplay in gridDisplays)
+        foreach (IGridDisplay display in gridDisplays)
         {
-            IGridDisplay display = serializedDisplay.Value;
             display.Clear();
         }
-        foreach (var serializedListener in turnListeners)
+        foreach (IGridTurns turnListener in turnListeners)
         {
-            IGridTurns turnListener = serializedListener.Value;
             turnListener.InstantTransition(currentPlayer);
         }
     }
@@ -175,9 +177,8 @@ public class BaseGrid : MonoBehaviour
                 grid.completedColumns++;
             }
             stateCompletion = new StateCompletion(grid.gridDisplays.Count());
-            foreach (var serializedDisplay in grid.gridDisplays)
+            foreach (IGridDisplay display in grid.gridDisplays)
             {
-                IGridDisplay display = serializedDisplay.Value;
                 display.DropToken(playerDropping, column, row, stateCompletion);
             }
             grid.tokens[column, row] = playerDropping;
@@ -213,9 +214,8 @@ public class BaseGrid : MonoBehaviour
         public void Enter(BaseGrid grid){
             grid.PassTurn();
             stateCompletion = new StateCompletion(grid.turnListeners.Count());
-            foreach (var serializedListener in grid.turnListeners)
+            foreach (IGridTurns turnListener in grid.turnListeners)
             {
-                IGridTurns turnListener = serializedListener.Value;
                 turnListener.PlayerTransition(grid.currentPlayer, stateCompletion);
             }
             
@@ -239,9 +239,8 @@ public class BaseGrid : MonoBehaviour
             
         }
         public void Enter(BaseGrid grid){
-            foreach (var serializedListener in grid.endListeners)
+            foreach (IGridEnd endListener in grid.endListeners)
             {
-                IGridEnd endListener = serializedListener.Value;
                 endListener.Victory(grid.currentPlayer);
             }
         }
@@ -256,9 +255,8 @@ public class BaseGrid : MonoBehaviour
             
         }
         public void Enter(BaseGrid grid){
-            foreach (var serializedListener in grid.endListeners)
+            foreach (IGridEnd endListener in grid.endListeners)
             {
-                IGridEnd endListener = serializedListener.Value;
                 endListener.End();
             }
         }
